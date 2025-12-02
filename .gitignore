@@ -208,6 +208,6 @@ __marimo__/
 
 
 logs
-logs/
+logs/*
 artifacts
 artifacts/*
