@@ -20,4 +20,5 @@ fastapi
 uvicorn
 Jinja2
 hf_xet
+evaluate
 -e .
