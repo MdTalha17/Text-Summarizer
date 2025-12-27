@@ -1,4 +1,5 @@
 transformers
+transformers[torch]
 transformers[sentencepiece]
 datasets
 sacrebleu
@@ -18,4 +19,5 @@ ensure
 fastapi
 uvicorn
 Jinja2
+hf_xet
 -e .
