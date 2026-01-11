@@ -21,4 +21,5 @@ uvicorn
 Jinja2
 hf_xet
 evaluate
+python-multipart
 -e .

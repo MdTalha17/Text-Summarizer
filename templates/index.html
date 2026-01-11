@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+</head>
+<body>
+    <h1>Text Summarizer</h1>
+    <p>Enter your text below and get an AI-powered summary</p>
+    
+    <form method="POST" action="/predict">
+        <div>
+            <label for="text">Enter Text to Summarize:</label>
+            <br>
+            <textarea id="text" name="text" rows="10" cols="50" required></textarea>
+        </div>
+        <br>
+        <button type="submit">Summarize</button>
+    </form>
+    
+    <br>
+    <hr>
+    <p>Powered by BART Model | FastAPI</p>
+</body>
+</html>
