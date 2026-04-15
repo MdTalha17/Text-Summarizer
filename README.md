@@ -29,7 +29,7 @@
 
 **Distill** is a production-ready text summarization system powered by [Facebook's BART](https://arxiv.org/abs/1910.13461) (Bidirectional and Auto-Regressive Transformer). It features a complete ML pipeline — from raw data ingestion through model training and evaluation — culminating in a sleek, dark-themed web interface served via FastAPI.
 
-The fine-tuned model is hosted on **[Hugging Face Hub]([https://huggingface.co/Md-Talha017/bart-samsum](https://huggingface.co/spaces/Md-Talha017/text-summarizer))** (`Md-Talha017/bart-samsum`), enabling instant inference without local training.
+The fine-tuned model is hosted on **[Hugging Face Hub](https://huggingface.co/spaces/Md-Talha017/text-summarizer)** (`Md-Talha017/bart-samsum`), enabling instant inference without local training.
 
 <br/>
 
