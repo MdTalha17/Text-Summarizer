@@ -39,10 +39,14 @@ class ModelTrainer:
             gradient_accumulation_steps=self.config.gradient_accumulation_steps, fp16=self.config.fp16
         ) 
 
-        trainer = Trainer(model=model_bart, args=trainer_args,
-                  tokenizer=tokenizer, data_collator=seq2seq_data_collator,
-                  train_dataset=dataset_samsum_pt["train"], 
-                  eval_dataset=dataset_samsum_pt["validation"])
+        trainer = Trainer(
+            model=model_bart,
+            args=trainer_args,
+            tokenizer=tokenizer,
+            data_collator=seq2seq_data_collator,
+            train_dataset=dataset_samsum_pt["train"],
+            eval_dataset=dataset_samsum_pt["validation"]
+        )
         
         trainer.train()
 

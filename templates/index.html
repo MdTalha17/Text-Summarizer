@@ -1,26 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Summarizer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distill — AI Text Summarizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+    --bg: #1a1917;        /* softer than black */
+    --surface: #23211f;   /* lifted card */
+    --surface2: #2c2a27;
+    --border: #3f3b36;
+    --border2: #504b45;
+    --text: #f5f1ea;      /* warm white */
+    --text2: #c2bdb6;
+    --text3: #8a847c;
+    --accent: #d6c28a;    /* classy gold accent */
+    --accent-dim: #b8a46d;
+    --danger: #d26a5c;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    /* Subtle grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; width: 100%; max-width: 660px; }
+
+    /* Header */
+    header {
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.5s ease both;
+    }
+    .wordmark {
+      font-family: var(--serif);
+      font-size: 28px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .wordmark-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .tagline {
+      font-size: 13px;
+      color: var(--text3);
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+      padding-left: 18px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    /* Textarea */
+    .field-label {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .char-count {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text3);
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        padding: 2px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.02em;
+    }
+    .char-count.warn {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      padding: 14px 16px;
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 3px rgba(232,213,163,0.07);
+    }
+    textarea::placeholder { color: var(--text3); }
+
+    /* Length toggles */
+    .section-gap { margin-top: 1.25rem; }
+    .length-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .pill input {
+  display: none;
+}
+
+    /* Default pill */
+    .pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+    }
+
+    /* Hover */
+    .pill:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+    }
+
+    /* ✅ Selected state (NO JS needed) */
+    .pill:has(input:checked) {
+        border-color: var(--accent);
+        background: rgba(214,194,138,0.08);
+        color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(214,194,138,0.15);
+    }
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+    /* Submit */
+    .submit-wrap { position: relative; }
+    button[type="submit"] {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #0f0e0d;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.01em;
+    }
+    button[type="submit"]:hover { 
+        opacity: 0.95;
+        box-shadow: 0 0 0 1px rgba(214,194,138,0.2),
+              0 8px 20px rgba(0,0,0,0.25); 
+    }
+    button[type="submit"]:active { transform: scale(0.99); }
+    button[type="submit"] svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Error */
+    .error-msg {
+      display: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 8px;
+      padding-left: 4px;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text3);
+    }
+    .status { display: flex; align-items: center; gap: 6px; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #5a9e6e; animation: pulse 2.5s ease-in-out infinite; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hidden input for length */
+    input[name="length"] { display: none; }
+  </style>
 </head>
 <body>
-    <h1>Text Summarizer</h1>
-    <p>Enter your text below and get an AI-powered summary</p>
-    
-    <form method="POST" action="/predict">
-        <div>
-            <label for="text">Enter Text to Summarize:</label>
-            <br>
-            <textarea id="text" name="text" rows="10" cols="50" required></textarea>
+<div class="page">
+
+  <header>
+    <div class="wordmark">
+      <span class="wordmark-dot"></span>
+      Distill
+    </div>
+    <p class="tagline">// AI-Powered Text Summarizer</p>
+  </header>
+
+  <div class="card">
+    <form action="/predict" method="post" id="mainForm" onsubmit="return validate()">
+
+      <label class="field-label" for="inputText">
+        <span>Input text</span>
+        <span class="char-count" id="charCount">0 / 4,000</span>
+      </label>
+      <textarea
+        name="text"
+        id="inputText"
+        placeholder="Paste an article, research paper, or any block of text…"
+        maxlength="4000"
+        oninput="charCount.innerText = this.value.length + ' / 4000'"
+      ></textarea>
+      <div class="section-gap">
+        <div class="field-label">Summary length</div>
+
+        <div class="length-row">
+            <label class="pill">
+                <input type="radio" name="length" value="short">
+                <span>Short</span>
+            </label>
+
+            <label class="pill">
+                <input type="radio" name="length" value="medium" checked>
+                <span>Medium</span>
+            </label>
+
+            <label class="pill">
+                <input type="radio" name="length" value="long">
+                <span>Long</span>
+            </label>
         </div>
-        <br>
-        <button type="submit">Summarize</button>
+        </div>
+      <div class="error-msg" id="errorMsg">Please enter some text before summarizing.</div>
+
+
+
+      <hr class="divider">
+
+      <div class="footer" style="margin-bottom: 1rem;">
+        <span class="status">
+          <span class="status-dot"></span>
+          BART model ready
+        </span>
+        <span>Max 4,000 characters</span>
+      </div>
+
+      <button type="submit">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Summarize text
+      </button>
+
     </form>
-    
-    <br>
-    <hr>
-    <p>Powered by BART Model | FastAPI</p>
+  </div>
+
+</div>
 </body>
 </html>

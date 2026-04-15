@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summary — Distill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --bg: #141311;
+        --surface: #1c1a17;
+        --surface2: #24221e;
+        --border: #2f2c28;
+        --border2: #3f3b36;
+
+        --text: #eae6df;
+        --text2: #b5afa6;
+        --text3: #7a746c;
+
+        --accent: #d6c18f;
+        --accent-dim: #a8935a;
+
+        --danger-bg: #2a1613;
+        --danger-border: #6a3a30;
+        --danger-text: #e07a6a;
+
+        --mono: 'DM Mono', monospace;
+        --serif: 'DM Serif Display', serif;
+        --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; width: 100%; max-width: 720px; }
+
+    /* Header */
+    header {
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeUp 0.4s ease both;
+    }
+    .wordmark {
+      font-family: var(--serif);
+      font-size: 24px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .wordmark-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .back-link {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--accent); }
+    .back-link svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Error banner */
+    .error-banner {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      animation: fadeUp 0.4s 0.1s ease both;
+    }
+    .error-banner svg { width: 16px; height: 16px; stroke: var(--danger-text); fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; margin-top: 1px; }
+    .error-banner p { font-size: 13px; color: var(--danger-text); font-family: var(--mono); }
+
+    /* Summary hero */
+    .summary-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.25rem;
+      animation: fadeUp 0.4s 0.1s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .summary-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
+    }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .summary-text {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .summary-text::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .summary-text::-webkit-scrollbar-thumb {
+        background: #4a453f;
+        border-radius: 4px;
+    }
+
+    /* Actions row */
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .btn-copy {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-copy svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-copy:hover { border-color: var(--accent-dim); color: var(--accent); }
+    .btn-copy.copied { border-color: #5a9e6e; color: #5a9e6e; }
+
+    /* Original text collapsible */
+    .original-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      animation: fadeUp 0.4s 0.2s ease both;
+    }
+    .original-toggle {
+      width: 100%;
+      padding: 14px 1.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      transition: color 0.15s;
+    }
+    .original-toggle:hover { color: var(--text2); }
+    .original-toggle svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .original-toggle.open svg { transform: rotate(180deg); }
+    .original-body {
+      display: none;
+      padding: 0 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .original-body.open { display: block; }
+    .original-body p {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text3);
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .original-body p::-webkit-scrollbar { width: 4px; }
+    .original-body p::-webkit-scrollbar-thumb {
+        background: #4a453f;
+        border-radius: 4px;
+    }
+
+    details[open] .original-body {
+        display: block;
+    }
+
+    /* Meta footer */
+    .meta {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text3);
+      animation: fadeUp 0.4s 0.3s ease both;
+    }
+
+    .summary-text {
+        width: 100%;
+        background: transparent;
+        border: none;
+        resize: vertical;
+
+        min-height: 140px;   
+        max-height: 300px;   
+
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.8;
+        color: var(--text);
+        font-family: var(--sans);
+        outline: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <a class="wordmark" href="/">
+      <span class="wordmark-dot"></span>
+      Distill
+    </a>
+    <a class="back-link" href="/">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      New summary
+    </a>
+  </header>
+
+  {% if error %}
+  <div class="error-banner">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p>{{ error }}</p>
+  </div>
+  {% endif %}
+
+  {% if summary %}
+  <div class="summary-hero">
+    <div class="section-label">Summary</div>
+
+    <textarea class="summary-text" readonly>{{ summary }}</textarea>
+  </div>
+
+  <div class="original-card">
+    <details>
+        <summary class="original-toggle">
+        Original text
+        </summary>
+
+        <div class="original-body">
+        <p>{{ text }}</p>
+        </div>
+    </details>
+    </div>
+  {% endif %}
+
+  <div class="meta">
+    <span>Powered by BART &amp; FastAPI</span>
+    {% if summary %}
+        <span>{{ word_count }} words in summary</span>
+    {% endif %}
+    </div>
+
+</div>
+</body>
+</html>
