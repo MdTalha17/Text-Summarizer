@@ -5,16 +5,18 @@ import torch
 
 class PredictionPipeline:
     def __init__(self):
-        self.config = ConfigurationManager().get_model_evaluation_config()
+        HF_MODEL = "Md-Talha017/bart-samsum"
+
+        #self.config = ConfigurationManager().get_model_evaluation_config()
 
         device = 0 if torch.cuda.is_available() else -1
 
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.tokenizer_path)
+        #self.tokenizer = AutoTokenizer.from_pretrained(self.config.tokenizer_path)
 
         self.pipe = pipeline(
             "summarization",
-            model=self.config.model_path,
-            tokenizer=self.tokenizer,
+            model=HF_MODEL,
+            #tokenizer=self.tokenizer,
             device=device
         )
 
@@ -36,13 +38,7 @@ class PredictionPipeline:
             "do_sample": False
         }
 
-        print("Dialogue:")
-        print(text)
-
         with torch.no_grad():
             output = self.pipe(text, **gen_kwargs)[0]["summary_text"]
-
-        print("\nModel Summary:")
-        print(output)
 
         return output

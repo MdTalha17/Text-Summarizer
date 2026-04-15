@@ -207,7 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 
-logs
-logs/*
-artifacts
-artifacts/*
+
+logs/
+artifacts/
+push_to_hub.py
