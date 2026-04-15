@@ -210,4 +210,4 @@ __marimo__/
 
 logs/
 artifacts/
-push_to_hub.py
+push_to_hf.py
