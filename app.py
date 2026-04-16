@@ -22,7 +22,10 @@ async def lifespan(app: FastAPI):
     try:
         predictor = PredictionPipeline()
         
-        predictor.predict("Warmup text", "short")
+        predictor.predict(
+            "This is a warmup sentence to initialize the model pipeline before serving requests.",
+            "short"
+        )
         
         logger.info("Model loaded successfully.")
     except Exception as e:
