@@ -137,6 +137,14 @@
       box-shadow: 0 0 0 3px rgba(232,213,163,0.07);
     }
     textarea::placeholder { color: var(--text3); }
+    textarea::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+        background: #4a453f;
+        border-radius: 4px;
+    }
 
     /* Length toggles */
     .section-gap { margin-top: 1.25rem; }
